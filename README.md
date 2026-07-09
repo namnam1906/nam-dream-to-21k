@@ -372,3 +372,54 @@ Old short labels like `Gel @45m` or `Pre + @45m + @90m` have been replaced with 
 
 > 45 นาทีหลังเริ่มวิ่ง → กินเจล 1 ซอง แล้วดื่มน้ำตาม
 
+
+
+---
+
+## Gemini AI Coach
+
+This version includes a Gemini-powered AI Coach API route.
+
+### Environment Variable
+
+Create `.env.local` locally:
+
+```bash
+GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+Do **not** commit `.env.local` to GitHub.
+
+For Railway, add the same key in:
+
+```text
+Project → Variables → GEMINI_API_KEY
+```
+
+### API Route
+
+```text
+POST /api/coach
+```
+
+Payload example:
+
+```json
+{
+  "workoutType": "Long Run",
+  "distanceKm": "16.38",
+  "duration": "2:23:47",
+  "avgPace": "8:47",
+  "avgHr": "144",
+  "gelTaken": "กินเจล 1 ซองประมาณนาทีที่ 45",
+  "feeling": "รู้สึกโอเค มีสะพานชัน",
+  "pain": "ไม่มี"
+}
+```
+
+The API returns structured coach feedback in Thai.
+
+### Security Note
+
+Never hardcode your API key in source code. Use environment variables only.
+
