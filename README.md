@@ -476,3 +476,32 @@ GEMINI_API_KEY=your_key_here
 ```
 
 Do not commit API keys to GitHub.
+
+
+---
+
+## Update: Local Progress & Training Log
+
+This version persists user data in browser `localStorage`.
+
+Saved locally:
+- 20-week training checkbox progress
+- Run logs
+- AI Coach analysis history per run
+
+New buttons:
+- `Analyze Run + Save`: sends workout to Gemini and stores the coach summary in Training Log
+- `Save without AI`: stores workout manually without Gemini
+- `Export JSON`: downloads all run logs as a JSON backup
+- `Reset checkbox progress`: clears the 20-week checkbox state
+
+LocalStorage keys:
+```text
+atm2026.training.done
+atm2026.run.logs
+```
+
+Limitations:
+- Data is saved only in the current browser/device.
+- Clearing browser data will delete it.
+- For cross-device sync, add Supabase or another database in a future phase.
