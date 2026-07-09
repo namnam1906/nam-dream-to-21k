@@ -73,6 +73,13 @@ type CoachResult = {
   workoutTypeDetected?: string;
   status?: string;
   summary?: string;
+  detectedFromScreenshot?: {
+    distanceKm?: string | null;
+    duration?: string | null;
+    avgPace?: string | null;
+    avgHr?: string | null;
+    elevation?: string | null;
+  };
   whatWentWell?: string[];
   watchOut?: string[];
   nextWorkoutSuggestion?: string;
@@ -99,10 +106,28 @@ export default function Page() {
     pain: 'ไม่มี',
     notes: '',
   });
+  const [screenshot, setScreenshot] = useState<{ base64: string; mimeType: string; name: string } | null>(null);
 
   const completed = Object.values(done).filter(Boolean).length;
   const pct = Math.round((completed / weeks.length) * 100);
   const remaining = daysLeft();
+
+  function handleScreenshot(file?: File) {
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = String(reader.result || '');
+      const base64 = result.includes(',') ? result.split(',')[1] : result;
+
+      setScreenshot({
+        base64,
+        mimeType: file.type || 'image/png',
+        name: file.name,
+      });
+    };
+    reader.readAsDataURL(file);
+  }
 
   async function analyzeRun() {
     setLoadingCoach(true);
@@ -112,7 +137,11 @@ export default function Page() {
       const res = await fetch('/api/coach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          imageBase64: screenshot?.base64,
+          imageMimeType: screenshot?.mimeType,
+        }),
       });
 
       const data = await res.json();
@@ -176,7 +205,21 @@ export default function Page() {
       <section className="card coach-card">
         <div>
           <h2 className="section-title"><Bot/> AI Coach — ส่งผลซ้อมให้ Gemini วิเคราะห์</h2>
-          <p className="muted">Phase 1: กรอกข้อมูลจาก Apple Fitness / Strava แล้วกด Analyze Run. Phase ถัดไปค่อยเพิ่มอัปโหลด screenshot.</p>
+          <p className="muted">กรอกข้อมูลเอง หรือแนบ screenshot จาก Apple Fitness / Strava ให้ Gemini Vision อ่านค่าจากรูปประกอบได้เลย</p>
+
+          <div className="upload-box">
+            <label>
+              <span>📷 Upload Screenshot (optional)</span>
+              <input type="file" accept="image/*" onChange={(e) => handleScreenshot(e.target.files?.[0])} />
+            </label>
+            {screenshot && (
+              <div className="upload-preview">
+                <span>แนบไฟล์แล้ว: {screenshot.name}</span>
+                <button type="button" onClick={() => setScreenshot(null)}>ลบรูป</button>
+              </div>
+            )}
+          </div>
+
           <div className="coach-form">
             {[
               ['workoutType', 'ประเภทการซ้อม เช่น Easy / Tempo / Long Run'],
@@ -214,6 +257,16 @@ export default function Page() {
             <>
               <div className={`status-pill ${coachResult.status || 'okay'}`}>{coachResult.status || 'okay'} · {coachResult.workoutTypeDetected}</div>
               <p>{coachResult.summary}</p>
+              {coachResult.detectedFromScreenshot && (
+                <div className="detected-box">
+                  <b>ค่าที่อ่านจาก Screenshot</b>
+                  <div>Distance: {coachResult.detectedFromScreenshot.distanceKm || '-'}</div>
+                  <div>Time: {coachResult.detectedFromScreenshot.duration || '-'}</div>
+                  <div>Pace: {coachResult.detectedFromScreenshot.avgPace || '-'}</div>
+                  <div>HR: {coachResult.detectedFromScreenshot.avgHr || '-'}</div>
+                  <div>Elevation: {coachResult.detectedFromScreenshot.elevation || '-'}</div>
+                </div>
+              )}
               <b>ทำได้ดี</b>
               <ul>{coachResult.whatWentWell?.map((x, i) => <li key={i}>{x}</li>)}</ul>
               <b>ระวัง</b>

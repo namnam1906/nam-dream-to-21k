@@ -423,3 +423,56 @@ The API returns structured coach feedback in Thai.
 
 Never hardcode your API key in source code. Use environment variables only.
 
+
+
+---
+
+## Update: Gemini 2.5 Flash + Screenshot Vision
+
+The AI Coach now uses the new official SDK:
+
+```bash
+npm install @google/genai
+```
+
+Model:
+
+```text
+gemini-2.5-flash
+```
+
+The coach supports both:
+- Manual workout form input
+- Optional Apple Fitness / Strava screenshot upload
+
+The screenshot is sent to Gemini Vision as inline base64 image data, and the AI returns detected workout stats plus coaching advice.
+
+### API Route
+
+```text
+POST /api/coach
+```
+
+Payload can include:
+
+```json
+{
+  "workoutType": "Long Run",
+  "distanceKm": "16.38",
+  "duration": "2:23:47",
+  "avgPace": "8:47",
+  "avgHr": "144",
+  "imageBase64": "...",
+  "imageMimeType": "image/png"
+}
+```
+
+### Important
+
+Use environment variables only:
+
+```bash
+GEMINI_API_KEY=your_key_here
+```
+
+Do not commit API keys to GitHub.

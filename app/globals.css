@@ -214,3 +214,47 @@ td { color: var(--muted); }
   padding: 14px;
 }
 .error { color: #ffb4c4 !important; }
+
+
+.upload-box {
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px dashed rgba(255,255,255,.28);
+  border-radius: 20px;
+  background: rgba(0,0,0,.16);
+}
+.upload-box label {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: var(--muted);
+}
+.upload-box input[type="file"] {
+  color: var(--muted);
+}
+.upload-preview {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  color: #fff;
+}
+.upload-preview button {
+  border: 0;
+  background: rgba(255,255,255,.12);
+  color: #fff;
+  border-radius: 999px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.detected-box {
+  margin: 12px 0 16px;
+  padding: 14px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 18px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.detected-box b { color: #fff; display: block; margin-bottom: 6px; }
