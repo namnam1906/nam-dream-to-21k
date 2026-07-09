@@ -147,3 +147,70 @@ td { color: var(--muted); }
   .training-table { min-width: 920px; }
   .card { border-radius: 22px; }
 }
+
+
+.coach-card {
+  margin-top: 26px;
+  padding: 24px;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 980px) { .coach-card { grid-template-columns: 1.25fr .75fr; } }
+.coach-form {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 760px) { .coach-form { grid-template-columns: 1fr 1fr; } }
+.coach-form label { display: flex; flex-direction: column; gap: 6px; color: var(--muted); font-size: 13px; }
+.coach-form input, .coach-form textarea {
+  width: 100%;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(0,0,0,.22);
+  color: #fff;
+  border-radius: 14px;
+  padding: 11px 12px;
+  outline: none;
+}
+.coach-form textarea { min-height: 72px; resize: vertical; }
+.primary-btn {
+  margin-top: 14px;
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 18px;
+  color: #fff;
+  background: linear-gradient(90deg,var(--pink),var(--blue));
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-weight: 800;
+}
+.primary-btn:disabled { opacity: .65; cursor: wait; }
+.coach-result {
+  background: rgba(0,0,0,.2);
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 24px;
+  padding: 20px;
+}
+.coach-result p, .coach-result li { color: var(--muted); line-height: 1.55; }
+.status-pill {
+  display: inline-flex;
+  padding: 8px 12px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.16);
+}
+.status-pill.good { background: rgba(110,231,183,.18); }
+.status-pill.caution { background: rgba(255,209,102,.18); }
+.status-pill.okay { background: rgba(53,166,255,.18); }
+.coach-note {
+  color: #fff !important;
+  background: linear-gradient(135deg, rgba(255,79,216,.14), rgba(53,166,255,.13));
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 18px;
+  padding: 14px;
+}
+.error { color: #ffb4c4 !important; }
