@@ -19,7 +19,7 @@ import {
   Bot,
   Send,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const raceDate = new Date('2026-11-28T05:30:00+07:00');
 
@@ -89,6 +89,23 @@ type CoachResult = {
   error?: string;
 };
 
+type RunLog = {
+  id: string;
+  date: string;
+  workoutType: string;
+  distanceKm: string;
+  duration: string;
+  avgPace: string;
+  avgHr: string;
+  cadence: string;
+  elevation: string;
+  gelTaken: string;
+  feeling: string;
+  pain: string;
+  notes: string;
+  coach?: CoachResult | null;
+};
+
 export default function Page() {
   const [done, setDone] = useState<Record<number, boolean>>({});
   const [coachResult, setCoachResult] = useState<CoachResult | null>(null);
@@ -107,6 +124,25 @@ export default function Page() {
     notes: '',
   });
   const [screenshot, setScreenshot] = useState<{ base64: string; mimeType: string; name: string } | null>(null);
+  const [runLogs, setRunLogs] = useState<RunLog[]>([]);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    const savedDone = localStorage.getItem('atm2026.training.done');
+    const savedRuns = localStorage.getItem('atm2026.run.logs');
+
+    if (savedDone) setDone(JSON.parse(savedDone));
+    if (savedRuns) setRunLogs(JSON.parse(savedRuns));
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (hydrated) localStorage.setItem('atm2026.training.done', JSON.stringify(done));
+  }, [done, hydrated]);
+
+  useEffect(() => {
+    if (hydrated) localStorage.setItem('atm2026.run.logs', JSON.stringify(runLogs));
+  }, [runLogs, hydrated]);
 
   const completed = Object.values(done).filter(Boolean).length;
   const pct = Math.round((completed / weeks.length) * 100);
@@ -146,11 +182,43 @@ export default function Page() {
 
       const data = await res.json();
       setCoachResult(data);
+      saveRunLog(data);
     } catch (error: any) {
       setCoachResult({ error: error?.message || 'Analyze failed' });
     } finally {
       setLoadingCoach(false);
     }
+  }
+
+  function saveRunLog(coach?: CoachResult | null) {
+    const run: RunLog = {
+      id: `${Date.now()}`,
+      date: new Date().toISOString().slice(0, 10),
+      ...form,
+      coach: coach || coachResult || null,
+    };
+
+    setRunLogs((logs) => [run, ...logs]);
+  }
+
+  function deleteRunLog(id: string) {
+    setRunLogs((logs) => logs.filter((log) => log.id !== id));
+  }
+
+  function exportRunLogs() {
+    const blob = new Blob([JSON.stringify(runLogs, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+
+    a.href = url;
+    a.download = 'atm2026-run-logs.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function resetTrainingProgress() {
+    if (!confirm('ล้าง progress checkbox ทั้งหมดใช่ไหม?')) return;
+    setDone({});
   }
 
   return (
@@ -191,8 +259,9 @@ export default function Page() {
               <div className="muted">ถึงวันแข่ง 28 Nov 2026</div>
             </div>
           </div>
-          <p className="muted">Training completed: {completed}/{weeks.length} weeks</p>
+          <p className="muted">Training completed: {completed}/{weeks.length} weeks · Run logs: {runLogs.length} ครั้ง</p>
           <div className="progress"><div style={{ width: `${pct}%` }} /></div>
+          <button className="ghost-btn" onClick={resetTrainingProgress}>Reset checkbox progress</button>
           <div className="quick-list">
             <div className="badge"><Activity size={16}/> Long Run &gt; Tempo &gt; Easy</div>
             <div className="badge"><HeartPulse size={16}/> Long run HR target 130–145</div>
@@ -244,9 +313,14 @@ export default function Page() {
               </label>
             ))}
           </div>
-          <button className="primary-btn" onClick={analyzeRun} disabled={loadingCoach}>
-            <Send size={16}/> {loadingCoach ? 'กำลังวิเคราะห์...' : 'Analyze Run'}
-          </button>
+          <div className="button-row">
+            <button className="primary-btn" onClick={analyzeRun} disabled={loadingCoach}>
+              <Send size={16}/> {loadingCoach ? 'กำลังวิเคราะห์...' : 'Analyze Run + Save'}
+            </button>
+            <button className="secondary-btn" type="button" onClick={() => saveRunLog(null)}>
+              Save without AI
+            </button>
+          </div>
         </div>
 
         <div className="coach-result">
@@ -278,6 +352,53 @@ export default function Page() {
             </>
           )}
         </div>
+      </section>
+
+      <section className="card" style={{ padding: 24, marginTop: 26 }}>
+        <div className="log-header">
+          <div>
+            <h2 className="section-title">Training Log & AI History</h2>
+            <p className="muted">ข้อมูลจะถูกเก็บใน browser ด้วย localStorage. ถ้าเปลี่ยนเครื่อง/ล้าง browser data ข้อมูลจะหาย เวอร์ชันถัดไปค่อยต่อ Supabase เพื่อ sync ข้ามเครื่องได้</p>
+          </div>
+          <button className="secondary-btn" onClick={exportRunLogs} disabled={!runLogs.length}>Export JSON</button>
+        </div>
+
+        {runLogs.length === 0 ? (
+          <div className="empty-log">ยังไม่มีข้อมูลซ้อม กรอกผลซ้อมแล้วกด Analyze Run + Save หรือ Save without AI ได้เลย</div>
+        ) : (
+          <div className="log-table-wrap">
+            <table className="log-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Distance</th>
+                  <th>Time</th>
+                  <th>Pace</th>
+                  <th>HR</th>
+                  <th>Feeling</th>
+                  <th>AI Summary</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {runLogs.map((log) => (
+                  <tr key={log.id}>
+                    <td>{log.date}</td>
+                    <td>{log.coach?.workoutTypeDetected || log.workoutType}</td>
+                    <td>{log.distanceKm} km</td>
+                    <td>{log.duration}</td>
+                    <td>{log.avgPace}</td>
+                    <td>{log.avgHr}</td>
+                    <td>{log.feeling}</td>
+                    <td>{log.coach?.summary || '-'}</td>
+                    <td><button className="tiny-btn" onClick={() => deleteRunLog(log.id)}>Delete</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </section>
 
       <section className="card race-info">

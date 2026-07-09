@@ -258,3 +258,57 @@ td { color: var(--muted); }
   line-height: 1.6;
 }
 .detected-box b { color: #fff; display: block; margin-bottom: 6px; }
+
+
+.button-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+.secondary-btn, .ghost-btn, .tiny-btn {
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.09);
+  color: #fff;
+  border-radius: 999px;
+  padding: 10px 14px;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-weight: 700;
+}
+.secondary-btn:disabled { opacity: .45; cursor: not-allowed; }
+.ghost-btn {
+  margin-top: 12px;
+  font-size: 13px;
+  padding: 8px 12px;
+}
+.tiny-btn {
+  font-size: 12px;
+  padding: 7px 10px;
+}
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.empty-log {
+  padding: 18px;
+  border: 1px dashed rgba(255,255,255,.22);
+  border-radius: 18px;
+  color: var(--muted);
+  background: rgba(0,0,0,.16);
+}
+.log-table-wrap {
+  overflow-x: auto;
+}
+.log-table {
+  min-width: 980px;
+}
+.log-table td:nth-child(8) {
+  color: #fff;
+  max-width: 360px;
+}
