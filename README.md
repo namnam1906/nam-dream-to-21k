@@ -333,3 +333,42 @@ Road to ATM Half Marathon 2026
 > Long run first.  
 > Easy means easy.  
 > Race day is earned.
+
+
+---
+
+## Latest Update
+
+### Updated Training Schedule
+
+The schedule now follows the user's preferred routine:
+
+| Day | Plan |
+|---|---|
+| Monday | Run workout |
+| Tuesday | Badminton |
+| Wednesday | Run workout |
+| Thursday | Badminton |
+| Friday | Rest |
+| Saturday | Long Run |
+| Sunday | Recovery |
+
+### Added Race Center
+
+New sections added:
+
+- Race Information
+- Course Timeline
+- Water Stations
+- Course Difficulty
+- Race Strategy
+- Race Kit Checklist
+- Race Day Timeline
+- Clear gel instructions in plain language
+
+### Clear Fuel Language
+
+Old short labels like `Gel @45m` or `Pre + @45m + @90m` have been replaced with clear instructions, such as:
+
+> 45 นาทีหลังเริ่มวิ่ง → กินเจล 1 ซอง แล้วดื่มน้ำตาม
+
